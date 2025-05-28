@@ -1,4 +1,4 @@
-local Script_Title = `阿尔宙斯-汉化by退休 <font color="rgb(255, 0, 0)">|</font> 子弹追踪，自动瞄准`
+local Script_Title = `阿尔宙斯-汉化by退休 <font color="rgb(255, 0, 0)">|</font> 子弹追踪`
 
 -- Instances:
 local Arceus = Instance.new("ScreenGui")
@@ -562,18 +562,13 @@ function getClosestPlayerToCursor(trg_part)
 	return nearest
 end
 
-local toggleBtn
-toggleBtn = addToggle("电脑自瞄", function(state)
-	enabled = state
-end, false)
-
 local toggleTeamCheckBtn
 toggleTeamCheckBtn = addToggle("子弹跟踪", function(state)
 	teamcheck = state
 end)
 
 local aimPartCombo
-aimPartCombo = addComboBox("瞄准部位", {"头", "身体"}, function(selection)
+aimPartCombo = addComboBox("部位", {"头", "身体"}, function(selection)
 	aimpart = selection
 end)
 
