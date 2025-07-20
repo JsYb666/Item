@@ -1,0 +1,218 @@
+local UserInputService = game:GetService("UserInputService")
+local TweenService = game:GetService("TweenService")
+local Players = game:GetService("Players")
+local StarterGui = game:GetService("StarterGui")
+
+local function CreateGUI(title, initialAnnouncement)
+    local player = Players.LocalPlayer
+    local playerGui = player:WaitForChild("PlayerGui", 5)
+    if not playerGui then return end
+
+    local gui = Instance.new("ScreenGui")
+    gui.Name = "MyGUI"
+    gui.ResetOnSpawn = false
+    gui.DisplayOrder = 10
+    gui.Parent = playerGui
+
+    local frame = Instance.new("Frame")
+    frame.Name = "MainFrame"
+    frame.BackgroundTransparency = 1
+    frame.BorderSizePixel = 0
+    frame.Position = UDim2.new(0.5, -125, 0.5, -150)
+    frame.Size = UDim2.new(1, 0, 1, 0)
+    frame.Parent = gui
+
+    local announcementCount = 1
+
+    local icon = Instance.new("ImageLabel")
+    icon.Name = "Icon"
+    icon.Size = UDim2.new(0.2, 0, 0.15, 0)
+    icon.Position = UDim2.new(0.5, 0, 0, 0)
+    icon.AnchorPoint = Vector2.new(0.5, 0)
+    icon.BackgroundTransparency = 1
+    icon.Image = "rbxassetid://13194104471"
+    icon.Parent = frame
+
+    local function RotateIcon()
+        local tweenInfo = TweenInfo.new(2, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut, -1, false)
+        local tween = TweenService:Create(icon, tweenInfo, {Rotation = 360})
+        tween:Play()
+    end
+    task.spawn(RotateIcon)
+
+    local titleLabel = Instance.new("TextLabel")
+    titleLabel.Name = "TitleLabel"
+    titleLabel.Size = UDim2.new(1, 0, 0.15, 0)
+    titleLabel.Position = UDim2.new(0, 0, 0.15, 0)
+    titleLabel.BackgroundTransparency = 1
+    titleLabel.Text = title
+    titleLabel.TextColor3 = Color3.new(0, 0, 0)
+    titleLabel.TextSize = 20
+    titleLabel.Font = Enum.Font.SourceSans
+    titleLabel.Parent = frame
+
+    local announcementLabel = Instance.new("TextLabel")
+    announcementLabel.Name = "AnnouncementLabel1"
+    announcementLabel.Size = UDim2.new(0.8, 0, 0.15, 0)
+    announcementLabel.Position = UDim2.new(0.1, 0, 0.33, 0)
+    announcementLabel.BackgroundTransparency = 1
+    announcementLabel.Text = initialAnnouncement or "欢迎使用 TX 退休脚本 V2！\n请点击下方按钮操作。"
+    announcementLabel.TextWrapped = true
+    announcementLabel.TextSize = 16
+    announcementLabel.Font = Enum.Font.SourceSans
+    announcementLabel.TextColor3 = Color3.new(0, 0, 0)
+    announcementLabel.TextStrokeTransparency = 0
+    announcementLabel.TextStrokeColor3 = Color3.new(0, 0, 0)
+    announcementLabel.Parent = frame
+
+    local instructionLabel = Instance.new("TextLabel")
+    instructionLabel.Name = "InstructionLabel"
+    instructionLabel.Size = UDim2.new(0.8, 0, 0.15, 0)
+    instructionLabel.Position = UDim2.new(0.1, 0, 0.48, 0)
+    instructionLabel.BackgroundTransparency = 1
+    instructionLabel.Text = ""
+    instructionLabel.TextWrapped = true
+    instructionLabel.TextSize = 16
+    instructionLabel.Font = Enum.Font.SourceSans
+    instructionLabel.TextColor3 = Color3.new(0, 0, 0)
+    instructionLabel.TextStrokeTransparency = 0
+    instructionLabel.TextStrokeColor3 = Color3.new(0, 0, 0)
+    instructionLabel.Parent = frame
+
+    local agreeButton = Instance.new("TextButton")
+    agreeButton.Name = "AgreeButton"
+    agreeButton.Size = UDim2.new(0.45, 0, 0.15, 0)
+    agreeButton.Position = UDim2.new(0.05, 0, 0.63, 0)
+    agreeButton.BackgroundTransparency = 1
+    agreeButton.Text = "继续加载"
+    agreeButton.TextSize = 20
+    agreeButton.Font = Enum.Font.SourceSans
+    agreeButton.Parent = frame
+
+    local disagreeButton = Instance.new("TextButton")
+    disagreeButton.Name = "DisagreeButton"
+    disagreeButton.Size = UDim2.new(0.45, 0, 0.15, 0)
+    disagreeButton.Position = UDim2.new(0.5, 5, 0.63, 0)
+    disagreeButton.BackgroundTransparency = 1
+    disagreeButton.Text = "取消加载"
+    disagreeButton.TextSize = 20
+    disagreeButton.Font = Enum.Font.SourceSans
+    disagreeButton.Parent = frame
+
+    local function SetRainbowGradient(label)
+        local colors = {
+            Color3.fromRGB(255, 0, 0),
+            Color3.fromRGB(255, 127, 0),
+            Color3.fromRGB(255, 255, 0),
+            Color3.fromRGB(0, 255, 0),
+            Color3.fromRGB(0, 0, 255),
+            Color3.fromRGB(75, 0, 130),
+            Color3.fromRGB(148, 0, 211)
+        }
+        local index = 1
+        while label.Parent do
+            label.TextColor3 = colors[index]
+            index = (index % #colors) + 1
+            task.wait(0.2)
+        end
+    end
+
+    local function SetSmoothGradient(label)
+        local colors = {
+            Color3.fromRGB(255, 0, 0),
+            Color3.fromRGB(0, 255, 0),
+            Color3.fromRGB(0, 0, 255),
+            Color3.fromRGB(255, 255, 0)
+        }
+        local duration = 2
+        local index = 1
+        while label.Parent do
+            local startColor = colors[index]
+            local endColor = colors[(index % #colors) + 1]
+            local startTime = tick()
+            while (tick() - startTime) < duration and label.Parent do
+                local t = (tick() - startTime) / duration
+                label.TextColor3 = startColor:Lerp(endColor, t)
+                task.wait(0.03)
+            end
+            index = (index % #colors) + 1
+        end
+    end
+
+    task.spawn(function() SetRainbowGradient(titleLabel) end)
+    task.spawn(function() SetRainbowGradient(agreeButton) end)
+    task.spawn(function() SetRainbowGradient(disagreeButton) end)
+    task.spawn(function() SetSmoothGradient(announcementLabel) end)
+    task.spawn(function() SetSmoothGradient(instructionLabel) end)
+
+    local function AnimateExit()
+        local duration = 1
+        local startTime = tick()
+        local initialSize = frame.Size
+        local initialPosition = frame.Position
+        while (tick() - startTime) < duration and frame.Parent do
+            local elapsedTime = tick() - startTime
+            local scale = 1 - (elapsedTime / duration)
+            local newSize = UDim2.new(
+                initialSize.X.Scale * scale,
+                math.max(0, initialSize.X.Offset * scale),
+                initialSize.Y.Scale * scale,
+                math.max(0, initialSize.Y.Offset * scale)
+            )
+            frame.Size = newSize
+            frame.Position = UDim2.new((1 - scale) / 2, 0, (1 - scale) / 2, 0)
+            task.wait(0.03)
+        end
+        gui:Destroy()
+    end
+
+    agreeButton.MouseButton1Click:Connect(function()
+        StarterGui:SetCore("SendNotification", {
+            Title = "通知",
+            Text = "脚本加载中...",
+            Duration = 5,
+            Icon = "rbxassetid://82031063194606"
+        })
+        task.spawn(AnimateExit)
+        task.spawn(function()
+            loadstring(game:HttpGet("https://pandadevelopment.net/virtual/file/1530c10fe5f9cbb5"))()
+        end)
+    end)
+
+    disagreeButton.MouseButton1Click:Connect(AnimateExit)
+
+    local function AddAnnouncement(newText)
+        if not frame.Parent then return end
+        announcementCount += 1
+
+        local newAnnouncement = Instance.new("TextLabel")
+        newAnnouncement.Name = "AnnouncementLabel" .. announcementCount
+        newAnnouncement.Size = UDim2.new(0.8, 0, 0.15, 0)
+        newAnnouncement.Position = UDim2.new(0.1, 0, 0.33 + (announcementCount - 1) * 0.15, 0)
+        newAnnouncement.BackgroundTransparency = 1
+        newAnnouncement.Text = newText
+        newAnnouncement.TextWrapped = true
+        newAnnouncement.TextSize = 16
+        newAnnouncement.Font = Enum.Font.SourceSans
+        newAnnouncement.TextColor3 = Color3.new(0, 0, 0)
+        newAnnouncement.TextStrokeTransparency = 0
+        newAnnouncement.TextStrokeColor3 = Color3.new(0, 0, 0)
+        newAnnouncement.Parent = frame
+
+        frame.Size = UDim2.new(0.3, 0, 0.45 + (announcementCount - 1) * 0.15, 0)
+        instructionLabel.Position = UDim2.new(0.1, 0, 0.33 + announcementCount * 0.15, 0)
+        agreeButton.Position = UDim2.new(0.05, 0, 0.33 + (announcementCount + 1) * 0.15, 0)
+        disagreeButton.Position = UDim2.new(0.5, 5, 0.33 + (announcementCount + 1) * 0.15, 0)
+
+        task.spawn(function() SetSmoothGradient(newAnnouncement) end)
+    end
+
+    return AddAnnouncement
+end
+
+local myTitle = "TX退休脚本V2"
+local initialAnnouncement = "欢迎使用 TX 退休脚本 V2！\n最新更新：2025年7月19日"
+local AddAnnouncement = CreateGUI(myTitle, initialAnnouncement)
+
+AddAnnouncement("公告：版本:v1.0 只有我一人制作更新较慢")
+AddAnnouncement("by 退休")
