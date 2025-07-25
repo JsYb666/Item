@@ -175,7 +175,7 @@ local function CreateGUI(title, initialAnnouncement)
         })
         task.spawn(AnimateExit)
         task.spawn(function()
-            loadstring(game:HttpGet("https://pandadevelopment.net/virtual/file/1530c10fe5f9cbb5"))()
+            loadstring(game:HttpGet("https://raw.githubusercontent.com/JsYb666/Item/refs/heads/main/W%2BZ%2BK"))()
         end)
     end)
 
@@ -211,8 +211,8 @@ local function CreateGUI(title, initialAnnouncement)
 end
 
 local myTitle = "TX退休脚本V2"
-local initialAnnouncement = "欢迎使用 TX 退休脚本 V2！\n最新更新：2025年7月19日"
+local initialAnnouncement = "欢迎使用 TX 退休脚本 V2！\n最新更新：2025年7月25日"
 local AddAnnouncement = CreateGUI(myTitle, initialAnnouncement)
 
-AddAnnouncement("公告：版本:v1.0 只有我一人制作更新较慢")
+AddAnnouncement("公告：版本:v1.1 只有我一人制作更新较慢")
 AddAnnouncement("by 退休")
