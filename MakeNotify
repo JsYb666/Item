@@ -1,0 +1,280 @@
+
+local NotificationModule = {}
+
+
+local TweenService = game:GetService("TweenService")
+local UserInputService = game:GetService("UserInputService")
+local CoreGui = game:GetService("CoreGui")
+
+
+local DefaultTheme = {
+    ["Color Hub 1"] = Color3.fromRGB(30, 30, 30), 
+    ["Color Stroke"] = Color3.fromRGB(100, 100, 100), 
+    ["Color Text"] = Color3.fromRGB(255, 255, 255), 
+    ["Color Dark Text"] = Color3.fromRGB(150, 150, 150), 
+    ["Font"] = {Enum.Font.SourceSansBold, Enum.Font.SourceSansSemibold, Enum.Font.SourceSans}, 
+    ["Tween Style"] = Enum.EasingStyle.Sine, 
+    ["Corner Radius"] = UDim.new(0, 5), 
+    ["Transparency"] = 0.1 
+}
+
+
+local SaveForTheme = {
+    Stroke = {},
+    Text = {},
+    DarkText = {},
+    Frames = {},
+    Corner = {}
+}
+
+
+local function Create(InstanceName, parent, props, children)
+    local New = Instance.new(InstanceName)
+    if parent and typeof(parent) == "Instance" then 
+        New.Parent = parent
+        if props then
+            for prop, value in pairs(props) do
+                New[prop] = value
+            end
+        end
+        if children then
+            for _, child in pairs(children) do
+                child.Parent = New
+            end
+        end
+    else
+        if parent then
+            for prop, value in pairs(parent) do
+                New[prop] = value
+            end
+        end
+        if props then
+            for _, child in pairs(props) do
+                child.Parent = New
+            end
+        end
+    end
+    return New
+end
+
+
+local function CreateTween(Configs)
+    local Instance = Configs[1] or Configs.Instance
+    local Prop = Configs[2] or Configs.Prop
+    local NewVal = Configs[3] or Configs.NewVal
+    local Time = Configs[4] or Configs.Time or 0.5
+    local TweenWait = Configs[5] or Configs.wait or false
+    local TweenInfo = TweenInfo.new(Time, DefaultTheme["Tween Style"])
+    
+    local Tween = TweenService:Create(Instance, TweenInfo, {[Prop] = NewVal})
+    Tween:Play()
+    if TweenWait then
+        Tween.Completed:Wait()
+    end
+    return Tween
+end
+
+
+local function Corner(props, Circle)
+    local New = Create("UICorner", {
+        CornerRadius = Circle and UDim.new(0.5, 0) or DefaultTheme["Corner Radius"]
+    })
+    if props then
+        for prop, value in pairs(props) do
+            New[prop] = value
+        end
+    end
+    if not Circle then
+        table.insert(SaveForTheme.Corner, New)
+    end
+    return New
+end
+
+
+local function insertTheme(instance, Theme)
+    table.insert(SaveForTheme[Theme], instance)
+    if typeof(instance) == "table" then
+        return instance[1]
+    end
+    return instance
+end
+
+
+local NotifyContainer
+local function InitializeContainer()
+    if not NotifyContainer then
+        NotifyContainer = Create("Frame", Create("ScreenGui", CoreGui, {
+            Name = "NotificationGui"
+        }), {
+            Size = UDim2.new(0, 300, 1, 0),
+            Position = UDim2.fromScale(1, 0),
+            AnchorPoint = Vector2.new(1, 0),
+            BackgroundTransparency = 1
+        }, {
+            Create("UIPadding", {
+                PaddingLeft = UDim.new(0, 25),
+                PaddingTop = UDim.new(0, 25),
+                PaddingBottom = UDim.new(0, 30)
+            }),
+            Create("UIListLayout", {
+                Padding = UDim.new(0, 15),
+                VerticalAlignment = "Bottom"
+            })
+        })
+    end
+end
+
+
+function NotificationModule:MakeNotify(Configs)
+    InitializeContainer() 
+    
+    local NTitle = Configs.Title or "通知"
+    local NText = Configs.Text or "这是一个通知"
+    local NTime = Configs.Time or 5
+    
+    local NFrame = Create("Frame", NotifyContainer, {
+        Size = UDim2.new(0.5, 0, 0, 0),
+        BackgroundTransparency = 1,
+        AutomaticSize = "Y",
+        Name = "Title"
+    })
+    
+    local RealNFrame = insertTheme(Create("Frame", NFrame, {
+        Size = UDim2.new(1, -25, 0, 0),
+        BackgroundColor3 = DefaultTheme["Color Hub 1"],
+        BackgroundTransparency = DefaultTheme["Transparency"],
+        Position = UDim2.fromOffset(25, 0),
+        AutomaticSize = "Y",
+        Active = true
+    }, {
+        Corner(),
+        insertTheme(Create("TextLabel", {
+            Size = UDim2.new(1, 0, 0, 15),
+            Font = DefaultTheme["Font"][2],
+            BackgroundTransparency = 1,
+            Text = NTitle,
+            TextSize = 12,
+            Position = UDim2.new(0, 15, 0, 5),
+            TextXAlignment = "Left",
+            TextColor3 = DefaultTheme["Color Text"]
+        }), "Text"),
+        insertTheme(Create("TextLabel", {
+            Size = UDim2.new(1, -25, 0, 0),
+            Position = UDim2.new(0, 15, 0, 25),
+            TextSize = 10,
+            TextColor3 = DefaultTheme["Color Dark Text"],
+            TextXAlignment = "Left",
+            TextYAlignment = "Top",
+            AutomaticSize = "Y",
+            Text = NText,
+            Font = DefaultTheme["Font"][3],
+            BackgroundTransparency = 1,
+            TextWrapped = true
+        }, {
+            Create("Frame", {
+                Size = UDim2.fromOffset(0, 8),
+                Position = UDim2.fromScale(0, 1),
+                BackgroundTransparency = 1
+            })
+        }), "DarkText")
+    }), "Frames")
+    
+    local CloseNotify = Create("TextButton", RealNFrame, {
+        Text = "X",
+        Font = Enum.Font.FredokaOne,
+        TextSize = 15,
+        BackgroundTransparency = 1,
+        TextColor3 = Color3.fromRGB(200, 200, 200),
+        Position = UDim2.new(1, -5, 0, 2),
+        AnchorPoint = Vector2.new(1, 0),
+        Size = UDim2.fromOffset(15, 15)
+    })
+    
+    local NotifyTimer = insertTheme(Create("Frame", RealNFrame, {
+        Size = UDim2.new(1, 0, 0, 1.5),
+        BackgroundColor3 = DefaultTheme["Color Stroke"],
+        Position = UDim2.new(0, 2, 0, 20),
+        BorderSizePixel = 0
+    }, {
+        Corner(),
+        Create("Frame", {
+            Size = UDim2.new(0, 0, 0, 5),
+            Position = UDim2.new(0, 0, 1, 5),
+            BackgroundTransparency = 1
+        })
+    }), "Stroke")
+    
+    local NotifyFinish, destroy
+    
+    CloseNotify.Activated:Connect(function()
+        if not destroy and not NotifyFinish and NFrame then
+            NotifyFinish = true
+            CreateTween({RealNFrame, "Position", UDim2.new(0, -50), 0.15, true})
+            CreateTween({RealNFrame, "Position", UDim2.new(1, 0, 0, 0), 0.50, true})
+            NFrame:Destroy()
+            destroy = true
+        end
+    end)
+    
+    task.spawn(function()
+        CreateTween({RealNFrame, "Position", UDim2.new(0, -50), 0.5, true})
+        CreateTween({RealNFrame, "Position", UDim2.new(0, 0), 0.15, true})
+        CreateTween({NotifyTimer, "Size", UDim2.new(0, 0, 0, 1.5), NTime, true})
+        if not destroy and not NotifyFinish and NFrame then
+            NotifyFinish = true
+            CreateTween({RealNFrame, "Position", UDim2.new(0, -50), 0.15, true})
+            CreateTween({RealNFrame, "Position", UDim2.new(1, 0, 0, 0), 0.50, true})
+            NFrame:Destroy()
+            destroy = true
+        end
+    end)
+    
+    local Notify = {}
+    function Notify:Destroy()
+        destroy = true
+        NFrame:Destroy()
+    end
+    function Notify:Visible(Bool)
+        NFrame.Visible = Bool
+    end
+    function Notify:Wait()
+        repeat task.wait() until not NFrame or NotifyFinish or destroy
+    end
+    return Notify
+end
+
+
+function NotificationModule:SetTheme(CustomTheme)
+    for key, value in pairs(CustomTheme) do
+        DefaultTheme[key] = value
+    end
+    
+    for _, instance in pairs(SaveForTheme.Frames) do
+        if instance then
+            instance.BackgroundColor3 = DefaultTheme["Color Hub 1"]
+            instance.BackgroundTransparency = DefaultTheme["Transparency"]
+        end
+    end
+    for _, instance in pairs(SaveForTheme.Text) do
+        if instance then
+            instance.TextColor3 = DefaultTheme["Color Text"]
+        end
+    end
+    for _, instance in pairs(SaveForTheme.DarkText) do
+        if instance then
+            instance.TextColor3 = DefaultTheme["Color Dark Text"]
+        end
+    end
+    for _, instance in pairs(SaveForTheme.Stroke) do
+        if instance then
+            instance.BackgroundColor3 = DefaultTheme["Color Stroke"]
+        end
+    end
+    for _, instance in pairs(SaveForTheme.Corner) do
+        if instance then
+            instance.CornerRadius = DefaultTheme["Corner Radius"]
+        end
+    end
+end
+
+return NotificationModule
