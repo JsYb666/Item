@@ -1,0 +1,58 @@
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local Debris = game:GetService("Debris")
+local LocalPlayer = Players.LocalPlayer
+local Camera = workspace.CurrentCamera
+local ShootEvent = ReplicatedStorage:WaitForChild("GunRemotes"):WaitForChild("ShootEvent")
+
+local MaxDistance = 1500
+
+local function getNearestTarget()
+    local myPos = LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
+    if not myPos then return nil end
+    myPos = myPos.Position
+
+    local nearest, minDist = nil, MaxDistance
+
+    for _, plr in ipairs(Players:GetPlayers()) do
+        if plr ~= LocalPlayer then
+            local char = plr.Character
+            if char and char:FindFirstChild("Head") and char:FindFirstChild("Humanoid") and char.Humanoid.Health > 0 then
+                if plr.Team == LocalPlayer.Team then continue end
+
+                local head = char.Head
+                local dist = (head.Position - myPos).Magnitude
+                if dist < minDist then
+                    minDist = dist
+                    nearest = head
+                end
+            end
+        end
+    end
+
+    return nearest
+end
+
+RunService.Heartbeat:Connect(function()
+
+    local char = LocalPlayer.Character
+    local hrp = char:FindFirstChild("HumanoidRootPart")
+    local tool = char:FindFirstChildOfClass("Tool")
+    if not hrp or not tool or tool:GetAttribute("ToolType") ~= "Gun" then return end
+
+    local myPos = hrp.Position
+    local targetHead = getNearestTarget()
+    if not targetHead then return end
+
+    local hitPos = targetHead.Position
+    pcall(function()
+        ShootEvent:FireServer({
+            {
+                myPos,
+                hitPos,
+                targetHead
+            }
+        })
+    end)
+end)
