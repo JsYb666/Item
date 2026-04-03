@@ -1,0 +1,3 @@
+TX = "TX Script"
+Script = "TX自动刷债券V4"
+loadstring(game:HttpGet("https://raw.githubusercontent.com/JsYb666/Item/refs/heads/main/Auto-Bond-V4"))()
