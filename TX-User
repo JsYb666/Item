@@ -8,7 +8,7 @@ CoreGui:SetCore("SendNotification", {
 local CoreGui = game:GetService("StarterGui")
 CoreGui:SetCore("SendNotification", {
     Title = "已自动复制TX主群群号",
-    Text = "感谢所有用户的理解于支持",
+    Text = "感谢所有用户的理解与支持",
     Icon = "rbxassetid://82031063194606",
     Duration = 30, 
 })
