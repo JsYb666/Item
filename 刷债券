@@ -1,13 +1,13 @@
 local CoreGui = game:GetService("StarterGui")
 CoreGui:SetCore("SendNotification", {
     Title = "TX Script",
-    Text = "脚本已更新V4",
+    Text = "脚本已更新V5",
     Icon = "rbxassetid://82031063194606",
     Duration = 15, 
 })
 CoreGui:SetCore("SendNotification", {
     Title = "TX Script",
-    Text = "请进入官网获取V4",
+    Text = "请进入官网获取V5",
     Icon = "rbxassetid://82031063194606",
     Duration = 15, 
 })
