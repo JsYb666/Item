@@ -9,7 +9,7 @@ CoreGui:SetCore("SendNotification", {
 })
     return
 end
-if not (Script and SCript == "TX死铁轨刷债券V6") then
+if not (Script and Script == "TX死铁轨刷债券V6") then
    local CoreGui = game:GetService("StarterGui")
 CoreGui:SetCore("SendNotification", {
     Title = "TX Script",
