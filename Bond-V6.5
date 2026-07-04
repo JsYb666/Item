@@ -1,0 +1,30 @@
+local RS = game:GetService("ReplicatedStorage")
+local world = require(RS.Shared.Universe.ECS.world)
+local comps = require(RS.Shared.Universe.ECS.components)
+local replicator = require(RS.Client.Universe.Replication.clientReplicator)
+local Remotes = require(RS.Shared.Universe.Remotes)
+local PlayerData = require(RS.Client.Universe.PlayerDataController)
+local Event = game:GetService("ReplicatedStorage").Shared.Universe.Network.RemoteEvent.Actionable
+task.spawn(function()
+    while true do
+        local char = world:get_resource(comps.ClientStateResource).localCharacter
+        if char then
+            if not world:has(char, comps.Sack) then
+                world:add(char, comps.Sack)
+                world:set(char, comps.Sack, { contents = {}, maxContents = 10 })
+            end
+            for id = 1, 100000 do
+                if world:has(id, comps.Storable) and world:get(id, comps.ObjectId) == "bond" then
+                    local sr = replicator:get_server_entity(id)
+                    if sr and sr ~= id then
+                        Remotes.Store:FireServer(sr)
+						Remotes.Store:FireServer()
+						Event:FireServer(sr)
+					end
+                end
+            end
+        end
+        task.wait(1)
+    end
+end)
+print(1)
