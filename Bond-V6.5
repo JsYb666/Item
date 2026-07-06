@@ -1,4 +1,17 @@
 --TX开源
+local CoreGui = game:GetService("StarterGui")
+CoreGui:SetCore("SendNotification", {
+    Title = "TX Script",
+    Text = "TX死铁轨刷债券V6.5",
+    Icon = "rbxassetid://82031063194606",
+    Duration = 20, 
+})
+CoreGui:SetCore("SendNotification", {
+    Title = "TX Script",
+    Text = "TX公益系列",
+    Icon = "rbxassetid://82031063194606",
+    Duration = 20, 
+})
 local RS = game:GetService("ReplicatedStorage")
 local world = require(RS.Shared.Universe.ECS.world)
 local comps = require(RS.Shared.Universe.ECS.components)
